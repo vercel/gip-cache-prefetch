@@ -3,13 +3,13 @@ import type { NextRequest } from "next/server";
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-	console.log("Hello from Middleware!");
+	console.log("MIDDLEWARE", request.nextUrl.pathname);
 	return NextResponse.next();
 }
 
 export const config = {
 	matcher: [
-		"/api/cache-header",
+		// "/api/cache-header",
 		/*
 		 * Match all request paths except for the ones starting with:
 		 * - api (API routes)
@@ -17,6 +17,7 @@ export const config = {
 		 * - _next/image (image optimization files)
 		 * - favicon.ico, sitemap.xml, robots.txt (metadata files)
 		 */
+		"/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
 		// "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
 	],
 };

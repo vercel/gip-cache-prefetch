@@ -68,7 +68,7 @@ export default function Home({ time }: { time: number }) {
 				return link;
 			});
 
-			document.body.append(...links);
+			// document.body.append(...links);
 		}
 	}, [randomSlugs]);
 
@@ -96,7 +96,7 @@ export default function Home({ time }: { time: number }) {
 						<ul className={styles.linkList}>
 							{randomSlugs.map((randomSlug, index) => (
 								<li key={index}>
-									<Link href={`/${randomSlug}`} prefetch>
+									<Link href={`/gsp/${randomSlug}`} prefetch={false}>
 										/{randomSlug}
 									</Link>
 								</li>
@@ -109,8 +109,23 @@ export default function Home({ time }: { time: number }) {
 	);
 }
 
-Home.getInitialProps = async (ctx: NextPageContext) => {
-	const res = await fetch(`${API_URL}?path=${ctx.query.slug || "home"}`);
-	const json = await res.json();
-	return json;
-};
+export async function getStaticProps({
+	params,
+}: { params?: { slug?: string[] } }) {
+	const slugPath = params?.slug?.join("/") || "home";
+	const res = await fetch(`${API_URL}?path=${slugPath}`);
+	const data = await res.json();
+
+	return {
+		props: data,
+		revalidate: 60, // Revalidate every minute
+	};
+}
+
+export async function getStaticPaths() {
+	return {
+		paths: [],
+		// Enable statically generating additional pages on-demand
+		fallback: "blocking",
+	};
+}
